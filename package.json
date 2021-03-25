@@ -1,0 +1,16 @@
+{
+  "name": "project_mobile_informationssysteme",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "http-server ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.web.fh-kufstein.ac.at/dornauerbenedikt/project_mobile_informationssysteme.git"
+  },
+  "author": "",
+  "license": "ISC"
+}
