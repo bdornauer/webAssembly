@@ -17,29 +17,32 @@ function create() {
 //web assembly
 
 function measureWAMS(arr) {
-    return fetch('main.wasm')
+    fetch('test.wasm')
         .then(response =>
             response.arrayBuffer()
         ).then(bytes =>
-            WebAssembly.compile(bytes)).then(mod => {
-            let instance = new WebAssembly.Instance(mod);
-            const {sortIntArray, memory} = instance.exports
+        WebAssembly.compile(bytes)).then(mod => {
+        let instance = new WebAssembly.Instance(mod);
+        const {sortIntArray, memory, areaCalc} = instance.exports
 
-            const array = new Int32Array(memory.buffer, 0, 10000);
-            array.set(arr)
+        const array = new Int32Array(memory.buffer, 0, 10000);
+        array.set(arr)
 
-            let begin1 = performance.now();
-            let result = sortIntArray(array.byteOffset, array.length);
-            let end1 = performance.now();
+        let begin1 = performance.now();
+        let result = sortIntArray(array.byteOffset, array.length);
+        let end1 = performance.now();
 
-            console.log("Result WAMS:" + result);
-            return end1 - begin1;
-        });
+        let begin2 = performance.now();
+        areaCalc(1, 2, 1000000);
+        let end2 = performance.now();
+
+        console.log("Result WAMS - sort: " + (end1 - begin1));
+        console.log("Result WAMS - area: " + (end2 - begin2));
+    });
 }
 
 function measureJs(arr) {
     let begin = performance.now();
-
     let a = 0;
     for (let i = 0; i < arr.length; ++i) {
         for (let j = i + 1; j < arr.length; ++j) {
@@ -51,19 +54,41 @@ function measureJs(arr) {
         }
     }
     let end = performance.now();
-    console.log("Result:" +  arr[arr.length-1]);
-    return end-begin;
+
+    console.log("Result JS - sort: " + (end - begin));
 }
+
+
+function myFunc(x){
+    return x*x+3*x+4;
+}
+
+function measureJSArea() {
+
+    let begin = performance.now();
+
+    let a = 1;
+    let b = 2;
+    let n = 1000000;
+    let delta = (b-a)/n;
+    let result;
+
+    for (let i = 0; i < n; i++) {
+        result += delta*myFunc(a+i*delta);
+    }
+    let end = performance.now();
+
+    console.log("Result JS - area: " + (end - begin));
+}
+
 
 function startTest() {
     console.log("----------------------");
     let arr = create();
-    measureWAMS(arr).then(data => {
-        console.log("Time WAMS:" + data)
-        console.log("---");
-        console.log("Time JS: " + measureJs(arr));
-        console.log("----------------------");
-    });
 
+    measureJs(arr);
+    measureJSArea();
+
+    measureWAMS(arr);
 }
 

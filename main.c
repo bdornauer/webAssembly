@@ -1,5 +1,20 @@
-//https://mbebenita.github.io/WasmExplorer/
-/*
+float myFunc(float x){
+  return x*x+3*x+4;
+}
+
+float areaCalc(float a, float b, int n) {
+  float area = 0;
+  float delta = (b-a)/((float) n);
+
+  for(int i=0; i<n; i++){
+    area += delta*myFunc(a+delta*i);
+  }
+  return area;
+}
+
+
+
+
 int sortIntArray(int vals[], int size) {
   int a = 0;
 
@@ -16,32 +31,4 @@ int sortIntArray(int vals[], int size) {
             }
         }
         return vals[size-1];
-}*/
-
-#include <stdio.h>
-#include <time.h>       // for clock_t, clock(), CLOCKS_PER_SEC
-
-double sortIntArray(int vals[], int size) {
-  int a = 0;
-  clock_t begin = clock();
-
-  for (int i = 0; i < size; ++i)
-        {
-            for (int j = i + 1; j < size; ++j)
-            {
-                if (vals[i] > vals[j])
-                {
-                    a =  vals[i];
-                    vals[i] = vals[j];
-                    vals[j] = a;
-                }
-            }
-        }
-        return vals[size-1];
-
-     clock_t end = clock();
-     return((float) (end-begin));
 }
-
-
-
