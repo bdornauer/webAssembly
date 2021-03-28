@@ -13,8 +13,6 @@ float areaCalc(float a, float b, int n) {
 }
 
 
-
-
 int sortIntArray(int vals[], int size) {
   int a = 0;
 

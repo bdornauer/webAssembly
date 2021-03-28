@@ -16,7 +16,12 @@ function create() {
 //https://mbebenita.github.io/WasmExplorer/
 //web assembly
 
-function measureWAMS(arr) {
+/**-----------------------------------------
+ * Functions for webassembly
+ *------------------------------------------
+ */
+
+function measureSortingWAMS(arr) {
     fetch('test.wasm')
         .then(response =>
             response.arrayBuffer()
@@ -25,23 +30,40 @@ function measureWAMS(arr) {
         let instance = new WebAssembly.Instance(mod);
         const {sortIntArray, memory, areaCalc} = instance.exports
 
+        let begin = performance.now();
         const array = new Int32Array(memory.buffer, 0, 10000);
         array.set(arr)
-
-        let begin1 = performance.now();
         let result = sortIntArray(array.byteOffset, array.length);
-        let end1 = performance.now();
+        let end = performance.now();
 
-        let begin2 = performance.now();
-        areaCalc(1, 2, 1000000);
-        let end2 = performance.now();
-
-        console.log("Result WAMS - sort: " + (end1 - begin1));
-        console.log("Result WAMS - area: " + (end2 - begin2));
+        console.log("Result WAMS - sort: " + (end - begin));
     });
 }
 
-function measureJs(arr) {
+function measureAreaCalcWAMS() {
+    fetch('test.wasm')
+        .then(response =>
+            response.arrayBuffer()
+        ).then(bytes =>
+        WebAssembly.compile(bytes)).then(mod => {
+        let instance = new WebAssembly.Instance(mod);
+        const {areaCalc} = instance.exports
+
+        let begin = performance.now();
+        areaCalc(1, 2, 1000000);
+        let end = performance.now();
+
+        console.log("Result WAMS - area: " + (end - begin));
+    });
+}
+
+
+/**-----------------------------------------
+ * Functions for webassembly
+ *------------------------------------------
+ */
+
+function measureSortingJS(arr) {
     let begin = performance.now();
     let a = 0;
     for (let i = 0; i < arr.length; ++i) {
@@ -59,26 +81,41 @@ function measureJs(arr) {
 }
 
 
-function myFunc(x){
-    return x*x+3*x+4;
+function myFunc(x) {
+    return x * x + 3 * x + 4;
 }
 
-function measureJSArea() {
+function myFunc2(x) {
+    return x * x * x + 4 * x + 4;
+}
+
+function measureAreaCalcJS(funcNum) {
 
     let begin = performance.now();
 
     let a = 1;
     let b = 2;
     let n = 1000000;
-    let delta = (b-a)/n;
+    let delta = (b - a) / n;
     let result;
 
     for (let i = 0; i < n; i++) {
-        result += delta*myFunc(a+i*delta);
+        if (funcNum == 1) {
+            result += delta * myFunc(a + i * delta);
+        } else {
+            result += delta * myFunc2(a + i * delta);
+        }
+
     }
     let end = performance.now();
 
     console.log("Result JS - area: " + (end - begin));
+}
+
+function infoUser(){
+    console.log(navigator.hardwareConcurrency);
+    console.log(navigator.product);
+    console.log(navigator.appVersion);
 }
 
 
@@ -86,9 +123,12 @@ function startTest() {
     console.log("----------------------");
     let arr = create();
 
-    measureJs(arr);
-    measureJSArea();
+    measureSortingJS(arr);
+    measureAreaCalcJS(1);
 
-    measureWAMS(arr);
+    measureAreaCalcWAMS();
+    measureSortingWAMS(arr);
+
+    infoUser()
 }
 
